@@ -32,8 +32,6 @@ build/
 ### VS Code ###
 .vscode/
 
-.env
-
 application.properties
 application.yml
 application.yaml
