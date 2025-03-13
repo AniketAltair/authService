@@ -5,10 +5,7 @@ import com.example.macrominder.authService.services.UserServiceImp;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
@@ -24,13 +21,11 @@ public class LogOutController {
     }
 
     // validate access token first
-    @PostMapping("/logout")
-    public ResponseEntity<?> logout() {
+    @PostMapping("/logout/{userId}")
+    public ResponseEntity<?> logout(@PathVariable Long userId) {
         Map<String, Object> response = null;
 
-        // we get userid here
-        // from frontend we remove the access token and refresh token
-        // from backend we remove stored refresh token againdt the userid
+        response = userService.logOut(userId);
 
         if (response.containsKey("error")) {
             return ResponseEntity.badRequest().body(response);

@@ -19,4 +19,5 @@ public interface UserService {
     public Map<String,Object> registerUserWithFacebook(String accesstoken,String role,HttpServletResponse httpServletResponse);
     public Map<String,Object> signInUserWithGoogle(String accesstoken, HttpServletResponse httpServletResponse);
     public Map<String,Object> signInUserWithFacebook(String accesstoken, HttpServletResponse httpServletResponse);
+    public Map<String,Object> logOut(Long userId);
 }

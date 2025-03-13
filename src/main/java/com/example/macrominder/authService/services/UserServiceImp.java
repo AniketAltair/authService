@@ -4,14 +4,8 @@ import com.example.macrominder.authService.dto.SignInDTO;
 import com.example.macrominder.authService.enums.AuthType;
 import com.example.macrominder.authService.helper.JwtUtil;
 import com.example.macrominder.authService.dto.SignUpDTO;
-import com.example.macrominder.authService.models.UserDetails;
-import com.example.macrominder.authService.models.UserInfo;
-import com.example.macrominder.authService.models.UserRefreshToken;
-import com.example.macrominder.authService.models.UserRole;
-import com.example.macrominder.authService.repository.UserDetailsRepository;
-import com.example.macrominder.authService.repository.UserRefreshTokenRepository;
-import com.example.macrominder.authService.repository.UserRepository;
-import com.example.macrominder.authService.repository.UserRoleRepository;
+import com.example.macrominder.authService.models.*;
+import com.example.macrominder.authService.repository.*;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +35,7 @@ public class UserServiceImp implements UserService {
     private final UserRoleRepository userRoleRepository;
     private final UserRefreshTokenRepository userRefreshTokenRepository;
     private final UserDetailsRepository userDetailsRepository;
+    private final UserOtpRepository userOtpRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
 
@@ -49,12 +44,14 @@ public class UserServiceImp implements UserService {
                           UserRoleRepository userRoleRepository,
                           UserRefreshTokenRepository userRefreshTokenRepository,
                           UserDetailsRepository userDetailsRepository,
+                          UserOtpRepository userOtpRepository,
                           JwtUtil jwtUtil
                           ) {
         this.userRepository = userRepository;
         this.userRoleRepository = userRoleRepository;
         this.userRefreshTokenRepository = userRefreshTokenRepository;
         this.passwordEncoder = new BCryptPasswordEncoder();
+        this.userOtpRepository = userOtpRepository;
         this.jwtUtil = jwtUtil;
         this.userDetailsRepository = userDetailsRepository;
     }
@@ -77,6 +74,7 @@ public class UserServiceImp implements UserService {
         storeRefreshToken(newUser, refreshToken);
         setRefreshTokenCookie(response, refreshToken);
         setUserDetails(newUser);
+        setUserOtp(newUser);
 
         return buildResponseData(newUser, accessToken, signUpDTO.getRole(),AuthType.EMAIL.toString());
     }
@@ -139,6 +137,7 @@ public class UserServiceImp implements UserService {
         storeRefreshToken(newUser, refreshToken);
         setRefreshTokenCookie(httpServletResponse, refreshToken);
         setUserDetails(newUser);
+        setUserOtp(newUser);
 
         return buildResponseData(newUser, accessToken,role,AuthType.GOOGLEEMAIL.toString());
 
@@ -208,6 +207,7 @@ public class UserServiceImp implements UserService {
         storeRefreshToken(newUser, refreshToken);
         setRefreshTokenCookie(httpServletResponse, refreshToken);
         setUserDetails(newUser);
+        setUserOtp(newUser);
 
         return buildResponseData(newUser, accessToken,role,AuthType.FACEBOOKEMAIL.toString());
     }
@@ -245,6 +245,15 @@ public class UserServiceImp implements UserService {
         setRefreshTokenCookie(httpServletResponse, refreshToken);
 
         return buildResponseData(user.get(), accessToken,user.get().getRole().getUserRole(),AuthType.FACEBOOKEMAIL.toString());
+    }
+
+    public Map<String,Object> logOut(Long userId){
+        Map<String,Object> response = new HashMap<>();
+
+        // from frontend we remove the access token and refresh token
+        // from backend we remove stored refresh token againdt the userid
+
+        return response;
     }
 
     @Override
@@ -313,6 +322,11 @@ public class UserServiceImp implements UserService {
     private void assignUserRole(UserInfo user, String role) {
         UserRole userRole = new UserRole(user, role);
         userRoleRepository.save(userRole);
+    }
+
+    private void setUserOtp(UserInfo userInfo){
+        UserOtp userOtp = new UserOtp(userInfo,null,null);
+        userOtpRepository.save(userOtp);
     }
 
     private void storeRefreshToken(UserInfo user, String refreshToken) {

@@ -34,6 +34,9 @@ public class UserInfo {
     @OneToOne(mappedBy = "userInfoInUserDetails", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private UserDetails signUpDateTime;
 
+    @OneToOne(mappedBy = "userInfoInUserOtp", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private UserOtp otp;
+
     // Constructors
     public UserInfo() {}
 
